@@ -1,12 +1,32 @@
+use std::collections::HashMap;
+use std::path::PathBuf;
+
 use crate::blob::Kind;
 use crate::entry::Entry;
 use crate::traits::Object;
+use crate::utils::get_root_path;
 
 #[derive(Debug)]
 pub struct Tree {
     pub entries: Vec<Entry>,
     pub kind: Kind,
     pub object_id: String,
+}
+
+#[derive(Debug)]
+pub struct TreeNode {
+    pub entries: HashMap<PathBuf, TreeNode>
+}
+
+impl TreeNode {
+    pub fn new() -> Self {
+        todo!("unimplemented")
+    }
+
+    pub fn add_entry(parent_directories: Vec<PathBuf>, entry: Entry) {
+        todo!("unimplemented")
+    }
+
 }
 
 impl Tree {
@@ -16,6 +36,16 @@ impl Tree {
             kind: Kind::Tree,
             object_id: String::new(),
         }
+    }
+
+    pub fn build(entries: Vec<Entry>) -> TreeNode {
+        entries.sort_by(|a, b| a.filename.cmp(&b.filename));
+        let mut root = TreeNode::new();
+        for entry in entries {
+            let cwd = get_root_path();
+            root.add_entry(entry.parent_directories(), entry);
+        }
+        root
     }
 }
 

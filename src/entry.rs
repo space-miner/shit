@@ -1,4 +1,6 @@
-use std::{fs::Metadata, os::unix::fs::PermissionsExt};
+use std::{fs::Metadata, os::unix::fs::PermissionsExt, path::{Path, PathBuf}};
+
+use crate::utils::get_root_path;
 
 #[derive(Debug)]
 pub struct Entry {
@@ -24,5 +26,18 @@ impl Entry {
         } else {
             String::from("100644")
         }
+    }
+
+    pub fn parent_directories(&self) -> Vec<PathBuf>  {
+        let mut parents = Vec::new(); 
+        let path = Path::new(&self.filename);
+        while path != get_root_path() {
+            let parent_opt = path.parent();
+            if parent_opt.is_some() {
+                let parent_path = parent_opt.unwrap().to_path_buf();
+                parents.push(parent_path);
+            }
+        }
+        parents
     }
 }
